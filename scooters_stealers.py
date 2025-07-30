@@ -1,5 +1,6 @@
 from cmu_graphics import *
 import random
+import math
 
 def onAppStart(app):
     app.width = 400
@@ -32,8 +33,9 @@ def onAppStart(app):
     app.coinSize = 25
     app.coinSpeed = 4
     app.coinSpawnTimer = 0
-    app.coinSpawndx = 60
+    app.coinSpawndx = 15
     app.score = 0 
+    app.gameTimer = 0
 
 def redrawAll(app): 
     drawBackground(app)
@@ -94,8 +96,21 @@ def drawPlayer(app):
         drawLabel('PLAYER', playerX, playerY, fill='white', size=10, bold=True)
 
 def drawCoins(app):
+    playerX = app.lanePositions[app.playerLane]
+    playerY = app.playerY
     for coin in app.coins: 
-        drawCircle(coin['x'], coin['y'], app.coinSize//2, fill = 'gold', border = 'orange', borderWidth = 2) #Hopefully this is cute when my code FINALLY WORKS OMGGG AHHH
+        distanceToPlayer = ((coin['baseX'] - playerX)**2 + (coin['y'] - playerY)**2)**0.5
+        
+        if distanceToPlayer < 150: 
+            bounceAmount = (150 - distanceToPlayer) / 150
+            bounceOffset = math.sin(coin['bouncePhase']) * 15 * bounceAmount
+            displayX = coin['baseX'] + bounceOffset
+        else:
+            displayX = coin['baseX']
+
+        drawCircle(displayX, coin['y'], app.coinSize//2 + 2, fill='yellow', opacity=30)  # Glow effect
+        drawCircle(displayX, coin['y'], app.coinSize//2, fill='gold', border='orange', borderWidth=2)
+        drawLabel('$', displayX, coin['y'], fill='darkGoldenRod', size=16, bold=True)
 
 def onKeyPress(app, key): 
     if key == 'a' or key == 'left': 
@@ -129,15 +144,17 @@ def drawScore(app):
 def spawnCoin(app): 
     lane = random.randint(0,2) #Choose a lane for coin randomly
     coin = {
-        'x': app.lanePositions[lane],
+        'baseX': app.lanePositions[lane],  # Store original X position
         'y': -app.coinSize, #Start above screen
-        'lane': lane
+        'lane': lane,
+        'bouncePhase': random.uniform(0, 2 * math.pi)
     }
     app.coins.append(coin)
 
 def updateCoins(app): 
     for coin in app.coins: 
         coin['y'] += app.coinSpeed #Move coins down the screen
+        coin['bouncePhase'] += 0.3
     
     app.coins = [coin for coin in app.coins if coin['y'] < app.height + app.coinSize]
 
@@ -149,7 +166,7 @@ def checkCoinCollision(app):
     while i < len(app.coins): 
         coin = app.coins[i]
         if coin['lane'] == app.playerLane:
-            distance = ((playerX-coin['x'])**2 + (playerY-coin['y'])**2)**0.5
+            distance = ((playerX-coin['baseX'])**2 + (playerY-coin['y'])**2)**0.5
             if distance < (app.playerSize + app.coinSize) // 2: 
                 app.coins.pop(i)
                 app.score += 10
