@@ -6,6 +6,8 @@ def onAppStart(app):
     app.width = 400
     app.height = 600
 
+    app.gameState = 'start' 
+
     #Road Properties 
     app.roadWidth = 300 
     app.roadX = (app.width- app.roadWidth) //2
@@ -35,7 +37,6 @@ def onAppStart(app):
     ]
 
     #Coins 
-
     app.coins = []
     app.coinSize = 25
     app.coinSpeed = 4
@@ -47,14 +48,23 @@ def onAppStart(app):
     app.gameOver = False
     app.gameTimer = 0
 
-def redrawAll(app): 
-    drawBackground(app)
-    drawRoad(app)
-    drawPlayer(app)
-    drawCoins(app)
-    drawScore(app)
-    drawObstacles(app)
-    if app.gameOver: 
+def redrawAll(app):  
+    if app.gameState == 'start':
+        drawStartScreen(app)
+    elif app.gameState == 'playing':
+        drawBackground(app)
+        drawRoad(app)
+        drawPlayer(app)
+        drawCoins(app)
+        drawScore(app)
+        drawObstacles(app)
+    elif app.gameState == 'gameOver':
+        drawBackground(app)
+        drawRoad(app)
+        drawPlayer(app)
+        drawCoins(app)
+        drawScore(app)
+        drawObstacles(app)
         drawGameOver(app)
 
 def drawBackground(app): 
@@ -126,63 +136,80 @@ def drawCoins(app):
         drawLabel('$', displayX, coin['y'], fill='darkGoldenRod', size=16, bold=True)
 
 def drawObstacles(app): 
-    for obs in app.obstacles: 
-        # Main trolley body dimensions
+    for obs in app.obstacles:    # Main trolley body dimensions
         obstacleWidth = 50
         obstacleHeight = 80
         
-        # Main dark green body
-        drawRect(obs['x'] - obstacleWidth//2, 
+        drawRect(obs['x'] - obstacleWidth//2, # Main dark green body
                  obs['y'] - obstacleHeight//2, 
                  obstacleWidth, obstacleHeight, 
                  fill='darkGreen', border='black', borderWidth=2)
         
-        # Front of the trolley (lighter green rectangle at top)
-        drawRect(obs['x'] - obstacleWidth//2 + 5, 
+        drawRect(obs['x'] - obstacleWidth//2 + 5,     # Front of the trolley 
                  obs['y'] - obstacleHeight//2 + 5, 
                  obstacleWidth - 10, 15, 
                  fill='lightGreen')
         
-        # White interior/window area with red border (much slimmer)
-        interiorWidth = obstacleWidth - 30  # Made much slimmer (was obstacleWidth - 12)
+        interiorWidth = obstacleWidth - 30  # White interior/window area with red border 
         interiorHeight = obstacleHeight - 30
         drawRect(obs['x'] - interiorWidth//2, 
                  obs['y'] - interiorHeight//2 + 5, 
                  interiorWidth, interiorHeight, 
                  fill='white', border='red', borderWidth=2)
         
-         # Four tires (positioned to extend slightly beyond the trolley body)
-        tireWidth = 8   # Slightly wider tires
-        tireHeight = 12  # Taller tires for more realistic look
+        tireWidth = 8 
+        tireHeight = 12 
         tireOffset = obstacleWidth//2 + 2  # Position slightly outside the body
         
-        
-        # Front left tire
-        drawRect(obs['x'] - tireOffset - tireWidth//2, obs['y'] - 28, 
+        drawRect(obs['x'] - tireOffset - tireWidth//2, obs['y'] - 28,        # Front left tire
+                 tireWidth, tireHeight, fill='black', border='darkGray', borderWidth=1)
+    
+        drawRect(obs['x'] + tireOffset - tireWidth//2, obs['y'] - 28,         # Front right tire  
+                 tireWidth, tireHeight, fill='black', border='darkGray', borderWidth=1)
+    
+        drawRect(obs['x'] - tireOffset - tireWidth//2, obs['y'] + 16,         # Rear left tire
+                 tireWidth, tireHeight, fill='black', border='darkGray', borderWidth=1)
+    
+        drawRect(obs['x'] + tireOffset - tireWidth//2, obs['y'] + 16,         # Rear right tire
                  tireWidth, tireHeight, fill='black', border='darkGray', borderWidth=1)
         
-        # Front right tire  
-        drawRect(obs['x'] + tireOffset - tireWidth//2, obs['y'] - 28, 
-                 tireWidth, tireHeight, fill='black', border='darkGray', borderWidth=1)
-        
-        # Rear left tire
-        drawRect(obs['x'] - tireOffset - tireWidth//2, obs['y'] + 16, 
-                 tireWidth, tireHeight, fill='black', border='darkGray', borderWidth=1)
-        
-        # Rear right tire
-        drawRect(obs['x'] + tireOffset - tireWidth//2, obs['y'] + 16, 
-                 tireWidth, tireHeight, fill='black', border='darkGray', borderWidth=1)
+        #WHY IS THIS NOT CENTERED AHHHHH 
         
 def drawGameOver(app): 
     drawRect(0, 0, app.width, app.height, fill='black', opacity=80)
     drawLabel('GAME OVER!', app.width//2, app.height//2 - 50, fill='red', size=40, bold=True)
     drawLabel(f'Final Score: {app.score}', app.width//2, app.height//2, fill='white', size=25, bold=True)
     drawLabel('Press R to Restart', app.width//2, app.height//2 + 50, fill='white', size=20)
+
+def drawStartScreen(app): 
+        # Background
+    drawRect(0, 0, app.width, app.height, fill='white')
+    
+    # Title
+    drawLabel('ScooterStealers :((', app.width//2, app.height//2 - 100, 
+              fill='Black', size=40, bold=True, font = 'times new roman')
+    
+    # Subtitle
+    drawLabel("Avoid the Molley's Trolleys to Survive!", app.width//2, app.height//2 - 50, 
+              fill='black', size=20, font = 'times new roman')
+    
+    # Instructions
+    drawLabel('Use A/D or Arrow Keys to move', app.width//2, app.height//2, 
+              fill='black', size=16, font = 'times new roman')
+    drawLabel('Collect coins for points!', app.width//2, app.height//2 + 40, 
+              fill='gold', size=16, bold=True, font = 'times new roman')
+    
+    # Start instruction
+    drawLabel('Click anywhere to start!', app.width//2, app.height//2 + 80, 
+              fill='red', size=18, bold=True, font = 'times new roman')
         
 def onKeyPress(app, key): 
-    if app.gameOver and key == 'r': 
+    if app.gameState == 'gameOver' and key == 'r': 
         onAppStart(app)
         return 
+    
+    if app.gameState != 'playing':
+        return
     
     if key == 'a' or key == 'left': 
         if app.playerLane > 0: 
@@ -191,11 +218,15 @@ def onKeyPress(app, key):
     elif key == 'd' or key == 'right': 
         if app.playerLane < 2: 
             app.playerLane += 1
-    
-    if app.gameOver:
-        return 
+
+def onMousePress(app, mouseX, mouseY):
+    if app.gameState == 'start':
+        app.gameState = 'playing'
 
 def onStep(app): 
+    if app.gameState != 'playing':
+        return 
+       
     if app.gameOver:
         return 
     
@@ -246,7 +277,7 @@ def spawnObstacle(app):
     obs = {
         'lane': lane,
         'x': app.lanePositions[lane],
-        'y': -40  # Changed from -app.obstacleDisplaySize to a smaller value
+        'y': -40  # Changed from -app.obstacleDisplaySize since not using Image anymore
     }
     app.obstacles.append(obs)
 
@@ -260,8 +291,7 @@ def updateCoins(app):
 def updateObstacles(app): 
     for obs in app.obstacles:
         obs['y'] += app.obstacleSpeed
-    # Remove obstacles that have gone off screen
-    app.obstacles = [obs for obs in app.obstacles if obs['y'] < app.height + 80] 
+    app.obstacles = [obs for obs in app.obstacles if obs['y'] < app.height + 80]  # Remove obstacles that have gone off screen
 
 def checkCoinCollision(app): 
     playerX = app.lanePositions[app.playerLane]
@@ -287,12 +317,11 @@ def checkObstacleCollision(app):
     for obs in app.obstacles:
         if obs['lane'] == app.playerLane:
             distance = ((playerX - obs['x'])**2 + (playerY - obs['y'])**2)**0.5
-            # Use the smaller collision size for precise hit detection
             collisionThreshold = (app.playerSize + app.obstacleCollisionSize) // 2
             if distance < collisionThreshold:
-                app.gameOver = True
+                app.gameOver = 'gameOver'
 
 #AHHHHHH
-#Bugs to ask TA about: Score Label, Obstacle Crash Space, Maybe some clouds
-#Things to add: Start Screen, Game Over Screen, Score increases every second, coin counter, center the obstacles
+#Bugs to ask TA about: Score Label, Maybe some clouds, IMAGES
+#Things to add: Start Screen, Game Over Screen(still a work in progress), Score increases every second, coin counter
 runApp()
