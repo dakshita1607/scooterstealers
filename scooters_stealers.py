@@ -14,10 +14,18 @@ def onAppStart(app):
     app.roadLineOffset = 0
 
     #Player
-    app.playerImageUrl = 'https://us-east.storage.cloudconvert.com/tasks/4b4ff701-4128-481e-92e3-c43673fe7467/image-removebg-preview%20%281%29%202.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250730%2Fva%2Fs3%2Faws4_request&X-Amz-Date=20250730T044221Z&X-Amz-Expires=86400&X-Amz-Signature=5bb70c0ea557d8814bddac0c11927da6088e43063febc6c76c6f90e0375668cf&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22image-removebg-preview%20%281%29%202.png%22&response-content-type=image%2Fpng&x-id=GetObject'
+    app.playerImageUrl = 'https://us-east.storage.cloudconvert.com/tasks/18bf846c-cc6b-461f-8786-b3e4bf7bd42a/image-removebg-preview%20%281%29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250730%2Fva%2Fs3%2Faws4_request&X-Amz-Date=20250730T060249Z&X-Amz-Expires=86400&X-Amz-Signature=8ee27db53f56377a46fff7b80016265e3c75a97c86a9b9481a8632579f960a0c&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22image-removebg-preview%20%281%29.png%22&response-content-type=image%2Fpng&x-id=GetObject'
     app.playerSize = 70
     app.playerY = app.height - 100
     app.playerLane = 1
+
+    #Obstacle - Molly's Trolleys
+    app.obstacleImageUrl = 'https://us-east.storage.cloudconvert.com/tasks/da13a7c5-14a5-44d0-93e3-1c16ef4b0d70/download.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250730%2Fva%2Fs3%2Faws4_request&X-Amz-Date=20250730T061116Z&X-Amz-Expires=86400&X-Amz-Signature=824142ca43e80e0a722dde285f6dc17777c6beab9ceeaa39c3ec4a92d8ba4bfa&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22download.png%22&response-content-type=image%2Fpng&x-id=GetObject'
+    app.obstacles = []
+    app.obstacleSize = 300
+    app.obstacleSpeed = 4
+    app.obstacleSpawnTimer = 0 
+    app.obstacleSpawndx = 60 
 
     #Lane Center Positions
     laneWidth = app.roadWidth // 3
@@ -35,6 +43,9 @@ def onAppStart(app):
     app.coinSpawnTimer = 0
     app.coinSpawndx = 15
     app.score = 0 
+
+    #Game 
+    app.gameOver = False
     app.gameTimer = 0
 
 def redrawAll(app): 
@@ -43,6 +54,9 @@ def redrawAll(app):
     drawPlayer(app)
     drawCoins(app)
     drawScore(app)
+    drawObstacles(app)
+    if app.gameOver: 
+        drawGameOver(app)
 
 def drawBackground(app): 
     drawRect(0, 0, app.width, app.height, fill = 'lightblue' ) #Sky Background
@@ -112,6 +126,12 @@ def drawCoins(app):
         drawCircle(displayX, coin['y'], app.coinSize//2, fill='gold', border='orange', borderWidth=2)
         drawLabel('$', displayX, coin['y'], fill='darkGoldenRod', size=16, bold=True)
 
+def drawObstacles(app): 
+    for obs in app.obstacles: 
+        drawImage(app.obstacleImageUrl, 
+                  obs['x'] - app.obstacleSize//2, 
+                  obs['y'] - app.obstacleSize//2, 
+                  width = app.obstacleSize, height = app.obstacleSize)
 def onKeyPress(app, key): 
     if key == 'a' or key == 'left': 
         if app.playerLane > 0: 
@@ -122,6 +142,9 @@ def onKeyPress(app, key):
             app.playerLane += 1
 
 def onStep(app): 
+    if app.gameOver:
+        return 
+    
     app.roadLineOffset += 3
 
     if app.roadLineOffset > 50: 
@@ -134,15 +157,28 @@ def onStep(app):
         spawnCoin(app)
         app.coinSpawnTimer = 0
 
+    app.obstacleSpawnTimer += 1
+
+    #ObstacleSpawn
+    if app.obstacleSpawnTimer >= app.obstacleSpawndx:
+        spawnObstacle(app)
+        app.obstacleSpawnTimer = 0
+
     updateCoins(app)
+    updateObstacles(app)
     checkCoinCollision(app)
+    checkObstacleCollision(app)
 
-
-def drawScore(app): 
-    drawLabel(f'Score: {app.score}', 50, 30, fill='black', size = 20, bold = True)
+def drawScore(app): #Ask how to fix the score label 
+    drawRect(5, 10, 120, 40, fill = 'black', opacity = 70, border = 'white', borderWidth = 1)
+    drawLabel(f'Score: {app.score}', 50, 30, fill='white', size = 20, bold = True)
 
 def spawnCoin(app): 
-    lane = random.randint(0,2) #Choose a lane for coin randomly
+    obstacleLanes = [obs['lane'] for obs in app.obstacles if -app.coinSize < obs['y'] < 150]
+    availableLanes = [i for i in range(3) if i not in obstacleLanes]
+    if not availableLanes:
+        return
+    lane = random.choice(availableLanes) #Choose a lane for coin randomly
     coin = {
         'baseX': app.lanePositions[lane],  # Store original X position
         'y': -app.coinSize, #Start above screen
@@ -151,12 +187,26 @@ def spawnCoin(app):
     }
     app.coins.append(coin)
 
+def spawnObstacle(app): 
+    lane = random.randint(0,2)
+    obs = {
+        'lane': lane,
+        'x': app.lanePositions[lane],
+        'y': -app.obstacleSize
+    }
+    app.obstacles.append(obs)
+
 def updateCoins(app): 
     for coin in app.coins: 
         coin['y'] += app.coinSpeed #Move coins down the screen
         coin['bouncePhase'] += 0.3
     
     app.coins = [coin for coin in app.coins if coin['y'] < app.height + app.coinSize]
+
+def updateObstacles(app): 
+    for obs in app.obstacles:
+        obs['y'] += app.obstacleSpeed
+    app.obstacles = [obs for obs in app.obstacles if obs['y'] < app.height + app.obstacleSize]
 
 def checkCoinCollision(app): 
     playerX = app.lanePositions[app.playerLane]
@@ -174,5 +224,16 @@ def checkCoinCollision(app):
                 i += 1
         else:
             i += 1
+
+def checkObstacleCollision(app):
+    playerX = app.lanePositions[app.playerLane]
+    playerY = app.playerY
+    for obs in app.obstacles:
+        if obs['lane'] == app.playerLane:
+            distance = ((playerX - obs['x'])**2 + (playerY - obs['y'])**2)**0.5
+            if distance < (app.playerSize + app.obstacleSize) // 2:
+                app.gameOver = True
 #AHHHHHH
+#Bugs to ask TA about: Score Label, Obstacle Crash Space
+#Things to add: Start Screen, Game Over Screen, Score increases every second, coin counter
 runApp()
