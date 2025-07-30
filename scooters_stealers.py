@@ -11,9 +11,23 @@ def onAppStart(app):
     #Animation for road lines
     app.roadLineOffset = 0
 
+    #Player
+    app.PlayerImageUrl = https://ibb.co/jPKBLfXL #AHH WHY ISNT THIS WORKING OMGGG 
+    app.playerY = app.height - 100
+    app.playerSize = 60
+
+    #Lane Center Positions
+    laneWidth = app.roadWidth // 3
+    app.lanePositions = [
+        app.roadX + laneWidth//2,    #Left Lane
+        app.roadX + laneWidth + laneWidth //2,    #Center Lane
+        app.roadX + 2 * laneWidth + laneWidth//2   #Right Lane
+    ]
+
 def redrawAll(app): 
     drawBackground(app)
     drawRoad(app)
+    drawPlayer(app)
 
 def drawBackground(app): 
     drawRect(0, 0, app.width, app.height, fill = 'lightblue' ) #Sky Background
@@ -33,7 +47,6 @@ def drawRoad(app):
     drawMovingLaneLines(app)
 
 def drawMovingLaneLines(app):
-    laneWidth = app.roadWidth // 3
 
     leftCenter = app.roadX + laneWidth //2
     middleCenter = app.roadX + laneWidth + laneWidth // 2
@@ -51,6 +64,20 @@ def drawMovingLaneLines(app):
             drawRect(rightCenter - 2, y, 4, dashLength, fill = 'yellow')
         y += dashLength + dashGap
 
+def drawPlayer(app): 
+    #Player Position
+    playerX = app.lanePositions[app.playerLane]
+    playerY = app.playerY 
+
+    #Draw Player
+    if app.playerImageUrl != "": 
+        drawImage(app.playerImageUrl, playerX-app.playerSize//2, 
+                  playerY - app.playerSize//2, width = app.playerSize, 
+                  height = app.playerSize)
+    else: 
+        drawRect(playerX - app.playerSize//2, playerY - app.playerSize//2, 
+                app.playerSize, app.playerSize, fill='red', border='darkRed', borderWidth=2)
+        drawLabel('PLAYER', playerX, playerY, fill='white', size=10, bold=True)
 
 def onStep(app): 
     app.roadLineOffset += 3
