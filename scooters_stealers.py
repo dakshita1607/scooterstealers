@@ -76,10 +76,20 @@ def drawPlayer(app):
         drawImage(app.playerImageUrl, playerX-app.playerSize//2, 
                   playerY - app.playerSize//2, width = app.playerSize, 
                   height = app.playerSize)
-    else: 
+    else: #fail safe in case my image doesnt work
         drawRect(playerX - app.playerSize//2, playerY - app.playerSize//2, 
                 app.playerSize, app.playerSize, fill='red', border='darkRed', borderWidth=2)
         drawLabel('PLAYER', playerX, playerY, fill='white', size=10, bold=True)
+
+def onKeyPress(app, key): 
+    if key == 'a' or key == 'left': 
+        if app.playerLane > 0: 
+            app.playerLane -= 1
+    
+    elif key == 'd' or key == 'right': 
+        if app.playerLane < 2: 
+            app.playerLane += 1
+            
 
 def onStep(app): 
     app.roadLineOffset += 3
