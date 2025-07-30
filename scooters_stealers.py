@@ -14,14 +14,14 @@ def onAppStart(app):
     app.roadLineOffset = 0
 
     #Player
-    app.playerImageUrl = 'https://us-east.storage.cloudconvert.com/tasks/18bf846c-cc6b-461f-8786-b3e4bf7bd42a/image-removebg-preview%20%281%29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250730%2Fva%2Fs3%2Faws4_request&X-Amz-Date=20250730T060249Z&X-Amz-Expires=86400&X-Amz-Signature=8ee27db53f56377a46fff7b80016265e3c75a97c86a9b9481a8632579f960a0c&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22image-removebg-preview%20%281%29.png%22&response-content-type=image%2Fpng&x-id=GetObject'
+    app.playerImageUrl = 'https://us-east.storage.cloudconvert.com/tasks/78e95300-86a8-4a40-88b9-4b0b1c7536c3/image-removebg-preview%20%281%29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250730%2Fva%2Fs3%2Faws4_request&X-Amz-Date=20250730T153900Z&X-Amz-Expires=86400&X-Amz-Signature=70fc150bbac489cc9ee8be99b9cc3b3cb82f41fcf83033477c524bf34630e661&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22image-removebg-preview%20%281%29.png%22&response-content-type=image%2Fpng&x-id=GetObject'
     app.playerSize = 70
     app.playerY = app.height - 100
     app.playerLane = 1
 
     #Obstacle - Molly's Trolleys
-    app.obstacleImageUrl = 'https://us-east.storage.cloudconvert.com/tasks/da13a7c5-14a5-44d0-93e3-1c16ef4b0d70/download.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250730%2Fva%2Fs3%2Faws4_request&X-Amz-Date=20250730T061116Z&X-Amz-Expires=86400&X-Amz-Signature=824142ca43e80e0a722dde285f6dc17777c6beab9ceeaa39c3ec4a92d8ba4bfa&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22download.png%22&response-content-type=image%2Fpng&x-id=GetObject'
     app.obstacles = []
+    app.obstacleImageUrl = 'https://us-east.storage.cloudconvert.com/tasks/74776e43-2a64-4b55-bf3d-fefece5ffbd1/download%20%281%29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250730%2Fva%2Fs3%2Faws4_request&X-Amz-Date=20250730T154034Z&X-Amz-Expires=86400&X-Amz-Signature=a4bb584af53e9d3dae14df3f35d2cef99014471e7bd6d13e5b9da21836c6e468&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22download%20%281%29.png%22&response-content-type=image%2Fpng&x-id=GetObject'
     app.obstacleDisplaySize = 250
     app.obstacleCollisionSize = 60
     app.obstacleSpeed = 4
