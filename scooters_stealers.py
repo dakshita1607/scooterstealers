@@ -22,7 +22,8 @@ def onAppStart(app):
     #Obstacle - Molly's Trolleys
     app.obstacleImageUrl = 'https://us-east.storage.cloudconvert.com/tasks/da13a7c5-14a5-44d0-93e3-1c16ef4b0d70/download.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250730%2Fva%2Fs3%2Faws4_request&X-Amz-Date=20250730T061116Z&X-Amz-Expires=86400&X-Amz-Signature=824142ca43e80e0a722dde285f6dc17777c6beab9ceeaa39c3ec4a92d8ba4bfa&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22download.png%22&response-content-type=image%2Fpng&x-id=GetObject'
     app.obstacles = []
-    app.obstacleSize = 300
+    app.obstacleDisplaySize = 250
+    app.obstacleCollisionSize = 60
     app.obstacleSpeed = 4
     app.obstacleSpawnTimer = 0 
     app.obstacleSpawndx = 60 
@@ -128,11 +129,23 @@ def drawCoins(app):
 
 def drawObstacles(app): 
     for obs in app.obstacles: 
+        # Draw large train to fill the lane visually
         drawImage(app.obstacleImageUrl, 
-                  obs['x'] - app.obstacleSize//2, 
-                  obs['y'] - app.obstacleSize//2, 
-                  width = app.obstacleSize, height = app.obstacleSize)
+                  obs['x'] - app.obstacleDisplaySize//2, 
+                  obs['y'] - app.obstacleDisplaySize//2, 
+                  width = app.obstacleDisplaySize, height = app.obstacleDisplaySize)
+        
+def drawGameOver(app): 
+    drawRect(0, 0, app.width, app.height, fill='black', opacity=80)
+    drawLabel('GAME OVER!', app.width//2, app.height//2 - 50, fill='red', size=40, bold=True)
+    drawLabel(f'Final Score: {app.score}', app.width//2, app.height//2, fill='white', size=25, bold=True)
+    drawLabel('Press R to Restart', app.width//2, app.height//2 + 50, fill='white', size=20)
+        
 def onKeyPress(app, key): 
+    if app.gameOver and key == 'r': 
+        onAppStart(app)
+        return 
+    
     if key == 'a' or key == 'left': 
         if app.playerLane > 0: 
             app.playerLane -= 1
@@ -140,6 +153,9 @@ def onKeyPress(app, key):
     elif key == 'd' or key == 'right': 
         if app.playerLane < 2: 
             app.playerLane += 1
+    
+    if app.gameOver:
+        return 
 
 def onStep(app): 
     if app.gameOver:
@@ -192,7 +208,7 @@ def spawnObstacle(app):
     obs = {
         'lane': lane,
         'x': app.lanePositions[lane],
-        'y': -app.obstacleSize
+        'y': -app.obstacleDisplaySize
     }
     app.obstacles.append(obs)
 
@@ -206,7 +222,7 @@ def updateCoins(app):
 def updateObstacles(app): 
     for obs in app.obstacles:
         obs['y'] += app.obstacleSpeed
-    app.obstacles = [obs for obs in app.obstacles if obs['y'] < app.height + app.obstacleSize]
+    app.obstacles = [obs for obs in app.obstacles if obs['y'] < app.height + app.obstacleDisplaySize]
 
 def checkCoinCollision(app): 
     playerX = app.lanePositions[app.playerLane]
@@ -228,12 +244,16 @@ def checkCoinCollision(app):
 def checkObstacleCollision(app):
     playerX = app.lanePositions[app.playerLane]
     playerY = app.playerY
+    
     for obs in app.obstacles:
         if obs['lane'] == app.playerLane:
             distance = ((playerX - obs['x'])**2 + (playerY - obs['y'])**2)**0.5
-            if distance < (app.playerSize + app.obstacleSize) // 2:
+            # Use the smaller collision size for precise hit detection
+            collisionThreshold = (app.playerSize + app.obstacleCollisionSize) // 2
+            if distance < collisionThreshold:
                 app.gameOver = True
+
 #AHHHHHH
-#Bugs to ask TA about: Score Label, Obstacle Crash Space
-#Things to add: Start Screen, Game Over Screen, Score increases every second, coin counter
+#Bugs to ask TA about: Score Label, Obstacle Crash Space, Maybe some clouds
+#Things to add: Start Screen, Game Over Screen, Score increases every second, coin counter, center the obstacles
 runApp()
