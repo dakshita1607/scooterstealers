@@ -112,6 +112,8 @@ def onStep(app):
     if app.roadLineOffset > 50: 
         app.roadLineOffset = 0
 
+    app.coinSpawnTimer += 1
+
     #Coin Spawn
     if app.coinSpawnTimer >= app.coinSpawndx: 
         spawnCoin(app)
@@ -143,13 +145,11 @@ def checkCoinCollision(app):
     playerX = app.lanePositions[app.playerLane]
     playerY = app.playerY 
 
-    coinsToRemove = []
-
     i = 0 
     while i < len(app.coins): 
         coin = app.coins[i]
         if coin['lane'] == app.playerLane:
-            distance = ((playerX-coin['x'])**2 + (playerY-coin['y']**2)**0.5)
+            distance = ((playerX-coin['x'])**2 + (playerY-coin['y'])**2)**0.5
             if distance < (app.playerSize + app.coinSize) // 2: 
                 app.coins.pop(i)
                 app.score += 10
@@ -157,5 +157,5 @@ def checkCoinCollision(app):
                 i += 1
         else:
             i += 1
-
+#AHHHHHH
 runApp()
