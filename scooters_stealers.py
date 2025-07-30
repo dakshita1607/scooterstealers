@@ -21,12 +21,10 @@ def onAppStart(app):
 
     #Obstacle - Molly's Trolleys
     app.obstacles = []
-    app.obstacleImageUrl = 'https://us-east.storage.cloudconvert.com/tasks/74776e43-2a64-4b55-bf3d-fefece5ffbd1/download%20%281%29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250730%2Fva%2Fs3%2Faws4_request&X-Amz-Date=20250730T154034Z&X-Amz-Expires=86400&X-Amz-Signature=a4bb584af53e9d3dae14df3f35d2cef99014471e7bd6d13e5b9da21836c6e468&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22download%20%281%29.png%22&response-content-type=image%2Fpng&x-id=GetObject'
-    app.obstacleDisplaySize = 250
-    app.obstacleCollisionSize = 60
     app.obstacleSpeed = 4
     app.obstacleSpawnTimer = 0 
     app.obstacleSpawndx = 60 
+    app.obstacleCollisionSize = 50
 
     #Lane Center Positions
     laneWidth = app.roadWidth // 3
@@ -129,11 +127,21 @@ def drawCoins(app):
 
 def drawObstacles(app): 
     for obs in app.obstacles: 
-        # Draw large train to fill the lane visually
-        drawImage(app.obstacleImageUrl, 
-                  obs['x'] - app.obstacleDisplaySize//2, 
-                  obs['y'] - app.obstacleDisplaySize//2, 
-                  width = app.obstacleDisplaySize, height = app.obstacleDisplaySize)
+        # Draw green rectangular obstacle (bird's eye view of trolley)
+        obstacleWidth = 50  # Width of the rectangle
+        obstacleHeight = 80  # Height of the rectangle (longer vertically)
+        
+        drawRect(obs['x'] - obstacleWidth//2, 
+                 obs['y'] - obstacleHeight//2, 
+                 obstacleWidth, obstacleHeight, 
+                 fill='green', border='darkGreen', borderWidth=3)
+        
+        # Optional: Add some detail to make it look more like a vehicle
+        # Front of the trolley (lighter green rectangle at top)
+        drawRect(obs['x'] - obstacleWidth//2 + 5, 
+                 obs['y'] - obstacleHeight//2 + 5, 
+                 obstacleWidth - 10, 15, 
+                 fill='white')
         
 def drawGameOver(app): 
     drawRect(0, 0, app.width, app.height, fill='black', opacity=80)
@@ -208,7 +216,7 @@ def spawnObstacle(app):
     obs = {
         'lane': lane,
         'x': app.lanePositions[lane],
-        'y': -app.obstacleDisplaySize
+        'y': -40  # Changed from -app.obstacleDisplaySize to a smaller value
     }
     app.obstacles.append(obs)
 
@@ -222,7 +230,8 @@ def updateCoins(app):
 def updateObstacles(app): 
     for obs in app.obstacles:
         obs['y'] += app.obstacleSpeed
-    app.obstacles = [obs for obs in app.obstacles if obs['y'] < app.height + app.obstacleDisplaySize]
+    # Remove obstacles that have gone off screen
+    app.obstacles = [obs for obs in app.obstacles if obs['y'] < app.height + 80] 
 
 def checkCoinCollision(app): 
     playerX = app.lanePositions[app.playerLane]
