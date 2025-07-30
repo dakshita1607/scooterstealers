@@ -12,9 +12,10 @@ def onAppStart(app):
     app.roadLineOffset = 0
 
     #Player
-    app.PlayerImageUrl = https://ibb.co/jPKBLfXL #AHH WHY ISNT THIS WORKING OMGGG 
-    app.playerY = app.height - 100
+    app.playerImageUrl = 'https://tinyurl.com/4xemdrhk'
     app.playerSize = 60
+    app.playerY = app.height - 100
+    app.playerLane = 1
 
     #Lane Center Positions
     laneWidth = app.roadWidth // 3
@@ -47,6 +48,7 @@ def drawRoad(app):
     drawMovingLaneLines(app)
 
 def drawMovingLaneLines(app):
+    laneWidth = app.roadWidth // 3
 
     leftCenter = app.roadX + laneWidth //2
     middleCenter = app.roadX + laneWidth + laneWidth // 2
