@@ -13,7 +13,7 @@ def onAppStart(app):
 
     #Player
     app.playerImageUrl = 'https://tinyurl.com/4xemdrhk'
-    app.playerSize = 60
+    app.playerSize = 70
     app.playerY = app.height - 100
     app.playerLane = 1
 
@@ -25,10 +25,21 @@ def onAppStart(app):
         app.roadX + 2 * laneWidth + laneWidth//2   #Right Lane
     ]
 
+    #Coins 
+
+    app.coins = []
+    app.coinSize = 25
+    app.coinSpeed = 4
+    app.coinSpawnTimer = 0
+    app.coinSpawndx = 60
+    app.score = 0 
+
 def redrawAll(app): 
     drawBackground(app)
     drawRoad(app)
     drawPlayer(app)
+    drawCoins(app)
+    drawScore(app)
 
 def drawBackground(app): 
     drawRect(0, 0, app.width, app.height, fill = 'lightblue' ) #Sky Background
@@ -81,6 +92,10 @@ def drawPlayer(app):
                 app.playerSize, app.playerSize, fill='red', border='darkRed', borderWidth=2)
         drawLabel('PLAYER', playerX, playerY, fill='white', size=10, bold=True)
 
+def drawCoins(app):
+    for coin in app.coins: 
+        drawCircle(coin['x'], coin['y'], app.coinSize//2, fill = 'gold', border = 'orange', borderWidth = 2) #Hopefully this is cute when my code FINALLY WORKS OMGGG AHHH
+
 def onKeyPress(app, key): 
     if key == 'a' or key == 'left': 
         if app.playerLane > 0: 
@@ -89,11 +104,12 @@ def onKeyPress(app, key):
     elif key == 'd' or key == 'right': 
         if app.playerLane < 2: 
             app.playerLane += 1
-            
 
 def onStep(app): 
     app.roadLineOffset += 3
 
     if app.roadLineOffset > 50: 
         app.roadLineOffset = 0
+
+    #AHH THERES SO MUCH TO WRITE OMGGGG 
 runApp()
