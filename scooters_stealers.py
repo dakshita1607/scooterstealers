@@ -31,7 +31,8 @@ def drawMovingLaneLines(app):
     laneWidth = app.roadWidth // 3
 
     leftCenter = app.roadX + laneWidth //2
-    rightCenter = app.roadX + laneWidth + laneWidth // 2
+    middleCenter = app.roadX + laneWidth + laneWidth // 2
+    rightCenter = app.roadX + 2 * laneWidth + laneWidth // 2
 
     dashLength = 30
     dashGap = 20
@@ -41,6 +42,7 @@ def drawMovingLaneLines(app):
     while y < app.height: 
         if y + dashLength > 0:
             drawRect(leftCenter - 2, y, 4, dashLength, fill = 'yellow')
+            drawRect(middleCenter - 2, y, 4, dashLength, fill = 'yellow')
             drawRect(rightCenter - 2, y, 4, dashLength, fill = 'yellow')
         y += dashLength + dashGap
 
