@@ -12,7 +12,12 @@ def onAppStart(app):
     app.roadLineOffset = 0
 
 def redrawAll(app): 
+    drawBackground(app)
     drawRoad(app)
+
+def drawBackground(app): 
+    drawRect(0, 0, app.width, app.height, fill = 'lightblue' ) #Sky Background
+    #ask TAs about clouds tomorrow
 
 def drawRoad(app): 
     drawRect(app.roadX, 0, app.roadWidth, app.height, fill = 'darkGrey') #Main Road
@@ -42,7 +47,7 @@ def drawMovingLaneLines(app):
     while y < app.height: 
         if y + dashLength > 0:
             drawRect(leftCenter - 2, y, 4, dashLength, fill = 'yellow')
-            drawRect(middleCenter - 2, y, 4, dashLength, fill = 'yellow')
+            drawRect(middleCenter - 2, y, 4, dashLength, fill = 'yellow') #fixed YAYYY
             drawRect(rightCenter - 2, y, 4, dashLength, fill = 'yellow')
         y += dashLength + dashGap
 
@@ -53,6 +58,3 @@ def onStep(app):
     if app.roadLineOffset > 50: 
         app.roadLineOffset = 0
 runApp()
-
-
-# No line in the right most row, needs fixing
