@@ -127,21 +127,51 @@ def drawCoins(app):
 
 def drawObstacles(app): 
     for obs in app.obstacles: 
-        # Draw green rectangular obstacle (bird's eye view of trolley)
-        obstacleWidth = 50  # Width of the rectangle
-        obstacleHeight = 80  # Height of the rectangle (longer vertically)
+        # Main trolley body dimensions
+        obstacleWidth = 50
+        obstacleHeight = 80
         
+        # Main dark green body
         drawRect(obs['x'] - obstacleWidth//2, 
                  obs['y'] - obstacleHeight//2, 
                  obstacleWidth, obstacleHeight, 
-                 fill='green', border='darkGreen', borderWidth=3)
+                 fill='darkGreen', border='black', borderWidth=2)
         
-        # Optional: Add some detail to make it look more like a vehicle
         # Front of the trolley (lighter green rectangle at top)
         drawRect(obs['x'] - obstacleWidth//2 + 5, 
                  obs['y'] - obstacleHeight//2 + 5, 
                  obstacleWidth - 10, 15, 
-                 fill='white')
+                 fill='lightGreen')
+        
+        # White interior/window area with red border (much slimmer)
+        interiorWidth = obstacleWidth - 30  # Made much slimmer (was obstacleWidth - 12)
+        interiorHeight = obstacleHeight - 30
+        drawRect(obs['x'] - interiorWidth//2, 
+                 obs['y'] - interiorHeight//2 + 5, 
+                 interiorWidth, interiorHeight, 
+                 fill='white', border='red', borderWidth=2)
+        
+         # Four tires (positioned to extend slightly beyond the trolley body)
+        tireWidth = 8   # Slightly wider tires
+        tireHeight = 12  # Taller tires for more realistic look
+        tireOffset = obstacleWidth//2 + 2  # Position slightly outside the body
+        
+        
+        # Front left tire
+        drawRect(obs['x'] - tireOffset - tireWidth//2, obs['y'] - 28, 
+                 tireWidth, tireHeight, fill='black', border='darkGray', borderWidth=1)
+        
+        # Front right tire  
+        drawRect(obs['x'] + tireOffset - tireWidth//2, obs['y'] - 28, 
+                 tireWidth, tireHeight, fill='black', border='darkGray', borderWidth=1)
+        
+        # Rear left tire
+        drawRect(obs['x'] - tireOffset - tireWidth//2, obs['y'] + 16, 
+                 tireWidth, tireHeight, fill='black', border='darkGray', borderWidth=1)
+        
+        # Rear right tire
+        drawRect(obs['x'] + tireOffset - tireWidth//2, obs['y'] + 16, 
+                 tireWidth, tireHeight, fill='black', border='darkGray', borderWidth=1)
         
 def drawGameOver(app): 
     drawRect(0, 0, app.width, app.height, fill='black', opacity=80)
